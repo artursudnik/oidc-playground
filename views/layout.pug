@@ -1,0 +1,12 @@
+html
+    head
+        title #{title || `Test page`}
+    body
+        h1 #{title}
+        block content
+        if loggedIn
+            p #[a(href="/auth/logout") logout]
+        pre -------------- technical details below --------------
+        pre loggedIn = #{!!loggedIn}
+        pre sessionId = #{sessionId}
+        pre session = #{JSON.stringify(session, null, 4)}
