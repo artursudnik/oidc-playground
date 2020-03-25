@@ -16,7 +16,8 @@ oidcClients().then((clients) => openIdClients = clients);
 router.get('/', (req, res) => {
     res.render('login', {
         title        : 'login page',
-        googleAuthUrl: '/auth/google'
+        googleAuthUrl: '/auth/google',
+        yahooAuthUrl : '/auth/yahoo'
     })
 });
 
@@ -46,6 +47,49 @@ router.get('/cb-google', redirectPatch, bodyParser.urlencoded({extended: false})
             code,
             grant_type  : 'authorization_code',
             redirect_uri: `${process.env.AUTH_CB_URL}/cb-google`
+        });
+
+        const claims = tokenSet.claims();
+
+        req.session.user = {
+            email      : claims.email,
+            name       : claims.name,
+            given_name : claims.given_name,
+            family_name: claims.family_name,
+            picture    : claims.picture,
+        };
+
+        req.session.loggedIn = true;
+        delete req.session.nonce;
+
+        res.redirect('/');
+    } catch (err) {
+        console.error(`${err}`);
+        console.error(`after receiving auth code: ${code}`);
+        console.error(`and having session content: ${JSON.stringify(req.session)}`);
+        next(err);
+    }
+}));
+
+router.get('/yahoo', redirectPatch, (req, res) => {
+    const authUrl = openIdClients.yahoo.authorizationUrl({
+        scope: 'openid',
+    });
+
+    console.log(`redirecting to ${authUrl}`);
+
+    res.redirect(authUrl)
+});
+
+router.get('/cb-yahoo', bodyParser.urlencoded({extended: false}), redirectPatch, asyncHandler(async (req, res, next) => {
+    const yahooOpenIdClient = openIdClients.yahoo;
+    const code = req.query.code;
+
+    try {
+        const tokenSet = await yahooOpenIdClient.grant({
+            code,
+            grant_type   : 'authorization_code',
+            redirect_uri : `${process.env.AUTH_CB_URL}/cb-yahoo`
         });
 
         const claims = tokenSet.claims();
