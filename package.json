@@ -13,7 +13,7 @@
     "express": "4.17.1",
     "express-async-handler": "1.1.4",
     "express-session": "1.17.0",
-    "openid-client": "3.14.0",
+    "openid-client": "3.14.1",
     "pug": "2.0.4",
     "redis": "3.0.2"
   }
