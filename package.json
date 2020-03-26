@@ -1,5 +1,5 @@
 {
-  "name": "node-oidc-client-test",
+  "name": "oidc-playground-test",
   "version": "0.1.0",
   "main": "bin/www.js",
   "scripts": {
