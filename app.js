@@ -23,6 +23,8 @@ app.set('view engine', 'pug');
 
 const redisStore = new RedisStore({client: redisClient});
 
+app.use(require('cookie-parser')());
+
 app.use(session({
     name             : process.env.SESSION_COOKIE_NAME,
     secret           : 'keyboard cat',

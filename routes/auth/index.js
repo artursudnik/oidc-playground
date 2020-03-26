@@ -14,6 +14,21 @@ let openIdClients;
 oidcClients().then((clients) => openIdClients = clients);
 
 router.get('/', (req, res) => {
+    if (req.session.user) {
+        return res.redirect('/');
+    }
+
+    if (req.cookies['idp']) {
+        switch (req.cookies['idp']) {
+            case 'google':
+                return res.redirect('/auth/google');
+                break;
+            case 'yahoo':
+                return res.redirect('/auth/yahoo');
+                break;
+        }
+    }
+
     res.render('login', {
         title        : 'login page',
         googleAuthUrl: '/auth/google',
@@ -52,15 +67,14 @@ router.get('/cb-google', redirectPatch, bodyParser.urlencoded({extended: false})
         const claims = tokenSet.claims();
 
         req.session.user = {
-            email      : claims.email,
-            name       : claims.name,
-            given_name : claims.given_name,
-            family_name: claims.family_name,
-            picture    : claims.picture,
+            idp: 'google',
+            ...claims
         };
 
         req.session.loggedIn = true;
         delete req.session.nonce;
+
+        res.cookie('idp', 'google', {maxAge: 3600000 * 24 * 365 * 10});
 
         res.redirect('/');
     } catch (err) {
@@ -88,22 +102,21 @@ router.get('/cb-yahoo', bodyParser.urlencoded({extended: false}), redirectPatch,
     try {
         const tokenSet = await yahooOpenIdClient.grant({
             code,
-            grant_type   : 'authorization_code',
-            redirect_uri : `${process.env.AUTH_CB_URL}/cb-yahoo`
+            grant_type  : 'authorization_code',
+            redirect_uri: `${process.env.AUTH_CB_URL}/cb-yahoo`
         });
 
         const claims = tokenSet.claims();
 
         req.session.user = {
-            email      : claims.email,
-            name       : claims.name,
-            given_name : claims.given_name,
-            family_name: claims.family_name,
-            picture    : claims.picture,
+            idp: 'yahoo',
+            ...claims
         };
 
         req.session.loggedIn = true;
         delete req.session.nonce;
+
+        res.cookie('idp', 'yahoo', {maxAge: 3600000 * 24 * 365 * 10});
 
         res.redirect('/');
     } catch (err) {
@@ -117,6 +130,7 @@ router.get('/cb-yahoo', bodyParser.urlencoded({extended: false}), redirectPatch,
 router.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.clearCookie('session');
+        res.clearCookie('idp');
         res.redirect('/');
     });
 });
