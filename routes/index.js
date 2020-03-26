@@ -16,7 +16,7 @@ router.use((req, res, next) => {
 
 router.use('/auth', require('./auth'));
 
-router.get('/', authenticate, (req, res) => {
+router.get('/', authorize, (req, res) => {
     res.render('index', {title: 'index page'});
 });
 
@@ -24,7 +24,7 @@ router.use((error, req, res, next) => {
     res.render('error', {error})
 });
 
-function authenticate(req, res, next) {
+function authorize(req, res, next) {
     if (!req.session.user) {
         return res.redirect('/auth')
     }
