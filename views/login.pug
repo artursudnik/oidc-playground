@@ -1,6 +1,8 @@
 extends layout
 
 block content
-    p log in with #[a(href=googleAuthUrl) Google]
-    p log in with #[a(href=yahooAuthUrl) Yahoo]
-    p log in with #[a(href=facebookAuthUrl) Facebook]
+    p
+    | log in with
+    for authUri in authUris
+        = ' '
+        | #[a(href=authUri.uri) #{authUri.name.toUpperCase()}]

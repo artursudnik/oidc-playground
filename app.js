@@ -31,7 +31,7 @@ app.use(session({
     resave           : false,
     saveUninitialized: false,
     rolling          : true,
-    cookie           : {secure: false, maxAge: parseInt(process.env.SESSION_MAX_AGE) * 1000},
+    cookie           : {secure: false, maxAge: parseInt(process.env.SESSION_MAX_AGE) * 1000 || undefined},
     store            : redisStore
 }));
 
