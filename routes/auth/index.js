@@ -137,7 +137,7 @@ if (idpsEnabled.facebook) {
         const state = generators.nonce();
 
         const stringifiedParams = queryString.stringify({
-            client_id   : `255715555452255`,
+            client_id   : process.env.AUTH_FB_APPLICATION_ID,
             redirect_uri: `${process.env.AUTH_CB_URL}/cb-facebook`,
             scope       : ['email'].join(','),
             state
