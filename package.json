@@ -17,6 +17,6 @@
     "express-session": "1.17.0",
     "ioredis": "4.16.2",
     "openid-client": "3.14.2",
-    "pug": "2.0.4"
+    "pug": "3.0.1"
   }
 }
